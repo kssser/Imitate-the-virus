@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Imitate the virus</title>
+	<style>
+		html,body{margin:0;padding:0;width:100%;height:100%;}
+		.container{
+			width:100%;
+			height:100%;
+			overflow:hidden;
+		}
+	</style>
+</head>
+<body>
+	<div class="container" id="container">
+		<canvas id="myCanvas"></canvas>
+	</div>
+	<script>
+		var container=document.getElementById('container'),
+			w=container.offsetWidth,
+			h=container.offsetHeight;
+		var canvas=document.getElementById('myCanvas'),
+			ctx=canvas.getContext('2d');
+		canvas.width=w;
+		canvas.height=h;
+
+		var fs=20,
+			wLimit=w/fs,
+			hLimit=h/fs;
+
+		var sList="abcdefghijklmnopqrstuvwxyz",	//数据源
+			aList=sList.split(''),
+			listLen=aList.length;
+
+		var data=[];	// 数据矩阵
+		for(var i=0;i<wLimit;i++)
+			data.push([]);
+
+		function setVirus(){
+			ctx.fillStyle="rgba(0,0,0,.06)";
+			ctx.fillRect(0,0,w,h);
+			ctx.fillStyle="#0f0";
+			ctx.font=fs+"px Arial";
+			ctx.textAlign="center";
+			for(var i=0,len=data.length;i<len;i++){
+				var curLen=data[i].length;
+				if(curLen<hLimit){
+					var text=aList[Math.floor(Math.random()*listLen)];
+					data[i].push(text);
+					ctx.fillText(text,(i+.5)*fs,(curLen+1)*fs);
+				}else{
+					if(Math.random()>.9)
+						data[i].length=0;
+				}
+			}
+		}
+
+		setInterval(setVirus,25);
+
+		function reSize(){
+			var tw=container.offsetWidth,
+				th=container.offsetHeight;
+			if(tw>w){
+				w=tw;
+				canvas.width=w;
+				for(var i=0,len=Math.floor(tw/fs)-Math.floor(wLimit);i<len;i++){
+					wLimit=tw/fs;
+					data.push([]);
+				}
+			}
+			if(th>h){
+				h=th;
+				canvas.width=h;
+				if(Math.floor(th/fs)>Math.floor(hLimit))
+					hLimit=th/fs;
+			}
+		}
+		window.onresize=reSize;
+	</script>
+</body>
+</html>
